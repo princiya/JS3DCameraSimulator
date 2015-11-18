@@ -1,0 +1,23 @@
+<html>
+	<body>
+		<img src="" width="640" height="480" id="image1" style="">
+		
+		<script>
+		
+			function setupWebSocket() {
+				var ws = new WebSocket("ws://localhost:3000/");
+				ws.binaryType = "arraybuffer";
+				ws.onopen = function() {
+					console.log("camera client 1 connected");
+				}
+				ws.onmessage = function(e) {
+					console.log("client 1", e);		
+					document.getElementById("image1").src = e.data;
+				}
+				return ws;
+			}
+			var ws = setupWebSocket();
+		
+		</script>
+	</body>
+</html>

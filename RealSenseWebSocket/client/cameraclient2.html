@@ -1,0 +1,41 @@
+<html>
+	<body>
+		<canvas width="640" height="480" ></canvas>
+		
+		<script>
+		
+			function setupWebSocket() {
+				var ws = new WebSocket("ws://localhost:3000/");
+				ws.binaryType = "arraybuffer";
+				ws.onopen = function() {
+					console.log("camera client 2 connected");
+				}
+				ws.onmessage = function(e) {
+					var canvas = document.querySelector('canvas');
+					var ctx = canvas.getContext('2d');
+					
+					var data = event.data;
+					if(data instanceof ArrayBuffer) {
+						var bytearray = new Uint8Array(data);
+						console.log("arraybuffer", bytearray);
+			
+			            var imgdata = ctx.getImageData(0, 0, 100, 100);
+				        var imgdatalen = imgdata.data.length;
+			
+			        	for(var i=0; i<imgdatalen; i++)	{
+			            	imgdata.data[i] = bytearray[i];
+			       	 	}
+			
+			        	ctx.putImageData(imgdata, 0, 0);
+				
+			    	} else {
+						console.log("not arraybuffer", data);
+					}
+				}
+				return ws;
+			}
+			var ws = setupWebSocket();
+		
+		</script>
+	</body>
+</html>

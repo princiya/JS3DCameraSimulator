@@ -1,0 +1,40 @@
+<html>
+	<canvas width="200" height="200"></canvas>
+	
+	<script>
+			function setupWebSocket() {
+				var ws = new WebSocket("ws://localhost:3000/");
+				ws.binaryType = "arraybuffer";
+				ws.onopen = function() {
+					console.log("canvas 1 connected");
+				}
+				/*
+				ws.onmessage = function(e) {
+					//do nothing	
+				}
+				*/
+				return ws;
+			}
+			var ws = setupWebSocket();
+			
+			var canvas = document.querySelector('canvas');
+			var ctx = canvas.getContext('2d');
+			
+			function send() {
+			  	ctx.fillStyle = "#ff0000";
+			  	ctx.fillRect(0, 0, 640, 480);
+				ws.send(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+		    }
+			
+			setTimeout(send, 1000);
+	</script>
+	
+</html>
+
+
+
+
+
+
+
+

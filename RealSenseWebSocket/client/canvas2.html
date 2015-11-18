@@ -1,0 +1,43 @@
+<html>
+	<img id="image1" src="../image/avatar.png" />
+	<canvas width="400" height="400" id="canvas1" style="display: none"></canvas>
+	
+	<script>
+			function setupWebSocket() {
+				var ws = new WebSocket("ws://localhost:3000/");
+				ws.binaryType = "arraybuffer";
+				ws.onopen = function() {
+					console.log("canvas 2 connected");
+				}
+				/*
+				ws.onmessage = function(e) {
+					//do nothing	
+				}
+				*/
+				return ws;
+			}
+			var ws = setupWebSocket();
+			
+			function send() {
+			  	var canvas = document.querySelector('canvas');
+				var ctx = canvas.getContext('2d');
+			  	var img = document.getElementById("image1");
+			    
+			    ctx.drawImage(img, 0, 0);
+			    ws.send(canvas.toDataURL('image/png;'));
+			    
+			    //ws.send(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer); //gives security exception
+		    }
+			
+			setTimeout(send, 1000);
+	</script>
+	
+</html>
+
+
+
+
+
+
+
+

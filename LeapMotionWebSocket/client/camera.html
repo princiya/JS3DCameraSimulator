@@ -1,0 +1,67 @@
+<html>
+	<video autoplay style="display:none;"></video>
+	<canvas style="display: none" width="640" height="480"></canvas>
+	
+	<script>
+			/*
+			http://francisshanahan.com/index.php/2011/stream-a-webcam-using-javascript-nodejs-android-opera-mobile-web-sockets-and-html5/
+			*/
+			
+			function setupWebSocket() {
+				var ws = new WebSocket("ws://localhost:3000/");
+				ws.binaryType = "arraybuffer";
+				ws.onopen = function() {
+					console.log("camera connected");
+				}
+				/*
+				ws.onmessage = function(e) {
+					//do nothing	
+				}
+				*/
+				return ws;
+			}
+			var ws = setupWebSocket();
+			
+			// cross-platform stuff. 
+			window.URL = window.URL || window.webkitURL;
+			navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+			//window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+			
+			var video = document.querySelector('video');
+			var canvas = document.querySelector('canvas');
+			var ctx = canvas.getContext('2d');
+			var localMediaStream = null;
+			
+			function snapshot() {
+			  if (localMediaStream) {
+			    	ctx.drawImage(video, 0, 0);
+					//ws.send(ctx.getImageData(0, 0, 640, 480).data.buffer);
+			    	
+			    	// "image/webp" works in Chrome 18. In other browsers, this will fall back to image/png.
+					var image = canvas.toDataURL('image/png');
+					ws.send(image);    	
+			  }
+			}
+			
+			function startVideo() {
+				setInterval(snapshot, 1000*6);
+				navigator.getUserMedia({video: true}, function(stream) {
+				  video.src = window.URL.createObjectURL(stream);
+				  localMediaStream = stream;
+				}, function(e) {
+					console.log("rejected", e);
+				});
+			}
+			
+			startVideo();
+	</script>
+	
+</html>
+
+
+
+
+
+
+
+
